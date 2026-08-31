@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agriculture Scheme Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input, textarea, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Agriculture Scheme Form</h2>
+    <form action="/submit-scheme" method="POST">
+        <label for="scheme_name">Scheme Name:</label>
+        <input type="text" id="scheme_name" name="scheme_name" required>
+
+        <label for="state">State:</label>
+        <input type="text" id="state" name="state" required>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" rows="4" required></textarea>
+
+        <label for="benefits">Benefits:</label>
+        <textarea id="benefits" name="benefits" rows="3" required></textarea>
+
+        <label for="eligibility">Eligibility:</label>
+        <textarea id="eligibility" name="eligibility" rows="3" required></textarea>
+
+        <label for="start_date">Start Date:</label>
+        <input type="date" id="start_date" name="start_date" required>
+
+        <label for="status">Status:</label>
+        <select id="status" name="status" required>
+            <option value="active">Active</option>
+            <option value="expired">Expired</option>
+        </select>
+
+        <button type="submit">Submit</button>
+    </form>
+
+</body>
+</html>

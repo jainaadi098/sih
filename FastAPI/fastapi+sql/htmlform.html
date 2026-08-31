@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agriculture Schemes</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 20px 40px; background-color: #f9f9f9; }
+    .container { max-width: 800px; margin: 0 auto; }
+    h1, h2 { color: #2a632d; }
+    .scheme { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 8px; background-color: #fff; }
+    form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 40px; }
+    input, textarea, select { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+    button { padding: 10px 15px; background-color: #2a632d; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+    button:hover { background-color: #3b8a40; }
+    #message { margin-top: 15px; font-weight: bold; }
+    .loading { color: gray; font-style: italic; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Add a New Scheme </h2>
+    <form id="add-scheme-form">
+      <input type="text" id="name" name="name" placeholder="Scheme Name" required>
+      <input type="text" id="state" name="state" placeholder="State (e.g., Madhya Pradesh)" required>
+      <textarea id="description" name="description" rows="3" placeholder="Description" required></textarea>
+      <textarea id="benefits" name="benefits" rows="2" placeholder="Benefits" required></textarea>
+      <textarea id="eligibility" name="eligibility" rows="2" placeholder="Eligibility Criteria" required></textarea>
+      <input type="date" id="start_date" name="start_date" required>
+      <select id="status" name="status" required>
+        <option value="">-- Select Status --</option>
+        <option value="Active">Active</option>
+        <option value="Expired">Expired</option>
+        <option value="Upcoming">Upcoming</option>
+      </select>
+      <button type="submit">Save Scheme</button>
+    </form>
+    <div id="message"></div>
+
+    <hr>
+
+    <h1>Available Agriculture Schemes</h1>
+    <div id="schemes-list" class="loading">
+      Loading schemes...
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "http://127.0.0.1:8000/schemes/";
+
+    // Fetch and display all schemes
+    async function getSchemes() {
+      const schemesListDiv = document.getElementById('schemes-list');
+      schemesListDiv.innerHTML = '<p class="loading">Loading schemes...</p>';
+      try {
+        const response = await fetch(API_BASE);
+        if (!response.ok) throw new Error("Failed to fetch schemes");
+        const schemes = await response.json();
+
+        if (!schemes || schemes.length === 0) {
+          schemesListDiv.innerHTML = '<p>No schemes available yet.</p>';
+          return;
+        }
+
+        schemesListDiv.innerHTML = '';
+        schemes.forEach(scheme => {
+          const schemeDiv = document.createElement('div');
+          schemeDiv.className = 'scheme';
+          schemeDiv.innerHTML = `
+            <h2>${scheme.name}</h2>
+            <p><strong>State:</strong> ${scheme.state}</p>
+            <p>${scheme.description.replace(/\n/g, '<br>')}</p>
+            <p><strong>Benefits:</strong> ${scheme.benefits}</p>
+            <p><strong>Eligibility:</strong> ${scheme.eligibility}</p>
+            <p><strong>Start Date:</strong> ${scheme.start_date}</p>
+            <p><strong>Status:</strong> ${scheme.status}</p>
+          `;
+          schemesListDiv.appendChild(schemeDiv);
+        });
+      } catch (error) {
+        console.error("Error fetching schemes:", error);
+        schemesListDiv.innerHTML = '<p style="color:red;">   </p>';
+      }
+    }
+
+    // Handle form submission
+    const form = document.getElementById('add-scheme-form');
+    const messageDiv = document.getElementById('message');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      messageDiv.textContent = "Saving scheme...";
+      messageDiv.style.color = "blue";
+
+      const formData = {
+        name: document.getElementById('name').value,
+        state: document.getElementById('state').value,
+        description: document.getElementById('description').value,
+        benefits: document.getElementById('benefits').value,
+        eligibility: document.getElementById('eligibility').value,
+        start_date: document.getElementById('start_date').value,
+        status: document.getElementById('status').value
+      };
+
+      try {
+        const response = await fetch(API_BASE, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          messageDiv.textContent = `Success! Scheme "${data.name}" was added.`;
+          messageDiv.style.color = 'green';
+          form.reset();
+          getSchemes(); // Refresh schemes list
+        } else {
+          messageDiv.textContent = `Error: ${data.detail || 'Could not add scheme.'}`;
+          messageDiv.style.color = 'red';
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        messageDiv.textContent = 'Error: Could not connect to the API.';
+        messageDiv.style.color = 'red';
+      }
+    });
+
+    // Load schemes on page load
+    document.addEventListener('DOMContentLoaded', getSchemes);
+  </script>
+</body>
+</html>
