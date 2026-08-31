@@ -6,8 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware # Added CORS Import
 import models
 import database
 
-# Added 'auth' to the imports
-from api.routers import farmers, schemes, crops, experts, crop_production, auth 
+# Added 'auth' and 'chat' to the imports
+from api.routers import farmers, schemes, crops, experts, crop_production, auth, chat
 
 # ... (Database setup remains the same) ...
 models.Base.metadata.create_all(bind=database.engine)
@@ -35,7 +35,8 @@ app.include_router(schemes.router, prefix="/api")
 app.include_router(crops.router, prefix="/api")
 app.include_router(experts.router, prefix="/api")
 app.include_router(crop_production.router, prefix="/api")
-app.include_router(auth.router, prefix="/api") # 3. ADDED: Auth router included with prefix
+app.include_router(auth.router, prefix="/api") 
+app.include_router(chat.router, prefix="/api")
 
 # ... (Root endpoint remains the same) ...
 @app.get("/", tags=["Root"])
